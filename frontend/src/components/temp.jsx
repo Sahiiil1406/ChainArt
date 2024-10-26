@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from "ethers";
 import {a} from '../public/abi';
-import {PinataSDK} from 'pinata-web3'
+import axios from 'axios';
 
+// Pinata configuration
+const PINATA_API_KEY = 'YOUR_PINATA_API_KEY';
+const PINATA_SECRET_KEY = 'YOUR_PINATA_SECRET_KEY';
+const PINATA_URL = 'https://api.pinata.cloud/pinning/pinFileToIPFS';
 
-const pinata = new PinataSDK({
-  pinataJwt: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJmYmFlYzVmNC0wYTJjLTRkNzEtYjRmYS0zYmIwMTc0Y2JlNmEiLCJlbWFpbCI6InN1cGVyc2VuMTRAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInBpbl9wb2xpY3kiOnsicmVnaW9ucyI6W3siZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjEsImlkIjoiRlJBMSJ9LHsiZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjEsImlkIjoiTllDMSJ9XSwidmVyc2lvbiI6MX0sIm1mYV9lbmFibGVkIjpmYWxzZSwic3RhdHVzIjoiQUNUSVZFIn0sImF1dGhlbnRpY2F0aW9uVHlwZSI6InNjb3BlZEtleSIsInNjb3BlZEtleUtleSI6Ijg2ZDc0YmMzNTA0ZjM5NDU1ZTljIiwic2NvcGVkS2V5U2VjcmV0IjoiNTdiNDU2OTRkNDZmY2JkMzRiMTdkZTVlNDlkMzAyMTUwOGJmNzk3MjY4ZDI5YjFjODM1ODc0OTBiZTVmOGRlMyIsImV4cCI6MTc2MDE2OTg2NX0.S69TmNgQzKAxD1wfzKfToBBs9GzfJhFFAKhsmeypAeI",
-  pinataGateway: "https://gateway.pinata.cloud"
-});
-
+// Custom Button Component
 const Button = ({ onClick, disabled, children, className = '' }) => (
   <button
     onClick={onClick}
@@ -82,13 +82,20 @@ const PatternNftMinter = () => {
 
   // Upload to IPFS using Pinata
   const uploadToIPFS = async (file) => {
-  
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        pinata_api_key: PINATA_API_KEY,
+        pinata_secret_api_key: PINATA_SECRET_KEY,
+      },
+    };
+
     try {
-      // const response = await axios.post(PINATA_URL, formData, config);
-      // return response.data.IpfsHash;      
-      const x=await pinata.upload.file(file);
-      console.log(x)
-      return x.IpfsHash;
+      const response = await axios.post(PINATA_URL, formData, config);
+      return response.data.IpfsHash;
     } catch (error) {
       console.error('Error uploading to IPFS:', error);
       throw error;
@@ -210,7 +217,6 @@ const PatternNftMinter = () => {
       // Mint NFT with IPFS hash
       const tx = await contract.mintNft(ipfsHash, ethers.parseEther(price));
       await tx.wait();
-      console.log(tx)
       
       setUploadStatus('NFT Minted Successfully!');
       getNftsByOwner();
@@ -386,7 +392,7 @@ const PatternNftMinter = () => {
                 <div key={index} className="border rounded-xl p-4 hover:shadow-lg transition-all">
                   <div className="h-48 bg-gray-100 rounded-lg mb-4">
                     <img 
-                      src={`https://gateway.pinata.cloud/ipfs/${nft.ipfsHash}`}
+                      src={`https://gateway.pinata.cloud/ipfs/${nft.hash}`}
                       alt={`NFT ${index}`}
                       className="w-full h-full object-contain"
                     />
