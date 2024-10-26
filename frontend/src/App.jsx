@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { ethers } from "ethers";
 import {a} from '../public/abi';
 import {PinataSDK} from 'pinata-web3'
+import Button from './components/Button';
+import Card from './components/Card';
+import Input from './components/Input';
 
 
 const pinata = new PinataSDK({
@@ -9,49 +12,7 @@ const pinata = new PinataSDK({
   pinataGateway: "https://gateway.pinata.cloud"
 });
 
-const Button = ({ onClick, disabled, children, className = '' }) => (
-  <button
-    onClick={onClick}
-    disabled={disabled}
-    className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 
-    ${disabled 
-      ? 'bg-gray-300 cursor-not-allowed' 
-      : 'bg-blue-600 hover:bg-blue-700 text-white hover:shadow-lg'
-    } ${className}`}
-  >
-    {children}
-  </button>
-);
 
-// Custom Input Component
-const Input = ({ label, type, value, onChange, placeholder, min, max, step, className = '' }) => (
-  <div className="flex flex-col gap-2">
-    {label && (
-      <label className="text-sm font-medium text-gray-700">{label}</label>
-    )}
-    <input
-      type={type}
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      min={min}
-      max={max}
-      step={step}
-      className={`px-4 py-2 border border-gray-300 rounded-lg focus:outline-none 
-      focus:ring-2 focus:ring-blue-500 focus:border-transparent ${className}`}
-    />
-  </div>
-);
-
-// Custom Card Component
-const Card = ({ title, children }) => (
-  <div className="bg-white rounded-xl shadow-lg p-6">
-    {title && (
-      <h2 className="text-xl font-bold text-gray-800 mb-4">{title}</h2>
-    )}
-    {children}
-  </div>
-);
 
 const PatternNftMinter = () => {
   // Pattern Generator State
@@ -233,6 +194,7 @@ const PatternNftMinter = () => {
     try {
       const address = await signer.getAddress();
       const nfts = await contract.getNftsByOwner(address);
+      console.log("NFTS",nfts)
       setNfts(nfts);
     } catch (error) {
       console.error("Error fetching NFTs:", error);
@@ -393,7 +355,7 @@ const PatternNftMinter = () => {
                   </div>
                   <div className="space-y-2">
                     <p className="text-sm text-gray-600 truncate">
-                      <span className="font-medium">IPFS Hash:</span> {nft.hash}
+                      <span className="font-medium">IPFS Hash:</span> {nft.ipfsHash}
                     </p>
                     <p className="text-sm text-gray-600">
                       <span className="font-medium">Price:</span> {ethers.formatEther(nft.price)} ETH
