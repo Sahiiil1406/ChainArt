@@ -1,5 +1,5 @@
 
-# AI-Powered NFT Minter
+# ChainArt:AI-Powered NFT Minter
 
 
 The AI-Powered NFT Minter is an application that dynamically generates unique images using AI and allows users to mint these images as NFTs on the blockchain. The app is designed to streamline the NFT creation and minting process by leveraging AI-generated artwork.
